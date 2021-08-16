@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Cliente(models.Model):
@@ -26,3 +27,6 @@ class Cliente(models.Model):
     activo = models.BooleanField(default=True)
     situacion = models.CharField(
         max_length=15, choices=SITUACION, default=ACTIVO)
+
+    def __str__(self):
+        return self.nombres + ' ' + self.apellidos

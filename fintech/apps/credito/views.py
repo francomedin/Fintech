@@ -1,4 +1,4 @@
-from django.views.generic.edit import CreateView, UpdateView,
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView, DeleteView
 from django.views.generic.detail import DetailView
 from .models import Credito
