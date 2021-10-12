@@ -33,8 +33,8 @@ class ClienteDeleteView(DeleteView):
 
 
 class ClienteDetailView(DetailView):
+    
     model = Cliente
-
     template_name = 'cliente/cliente_detail.html'
 
 

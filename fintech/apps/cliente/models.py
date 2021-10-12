@@ -21,7 +21,7 @@ class Cliente(models.Model):
     dni = models.CharField(max_length=10)
     telefono = models.CharField(max_length=20)
     cbu = models.CharField(max_length=30)
-    ocupacion = models.CharField(max_length=20)
+    ocupacion = models.CharField(max_length=30)
     direccion = models.CharField(max_length=70)
     fecha_nacimiento = models.DateField()
     activo = models.BooleanField(default=True)

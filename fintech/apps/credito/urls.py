@@ -29,7 +29,7 @@ urlpatterns = [
     ),
 
     path(
-        'credito/detail',
+        'credito/detail/<pk>/',
         CreditoDetailView.as_view(),
         name='credito_detail'
     ),
