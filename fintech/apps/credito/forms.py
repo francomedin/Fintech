@@ -9,7 +9,8 @@ class CreditoForm(forms.ModelForm):
     class Meta:
 
         model = Credito
-        fields = ('capital', 'fecha_prestamo', 'tasa_interes', 'cant_cuota')
+        fields = ('titular', 'capital', 'fecha_prestamo',
+                  'tasa_interes', 'cant_cuota')
 
     capital = forms.FloatField(
         label='Capital',

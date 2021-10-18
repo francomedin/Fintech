@@ -1,7 +1,7 @@
 from django.views.generic.edit import CreateView, FormView, UpdateView
 from django.views.generic import ListView, DeleteView
 from django.views.generic.detail import DetailView
-from .models import Credito
+from .models import Credito, Cuota
 from django.urls import reverse, reverse_lazy
 from .forms import CreditoForm
 # Create your views here.
@@ -15,14 +15,21 @@ class CreditoCreateView(FormView):
 
     def form_valid(self, form):
 
-        cuota = 0
-
+        titular = form.cleaned_data['titular']
         capital = form.cleaned_data['capital']
         tasa_interes = form.cleaned_data['tasa_interes']/100
         cant_cuota = form.cleaned_data['cant_cuota']
         fecha = form.cleaned_data['fecha_prestamo']
 
-        Credito.objects.create_credito(
+        credito_obj = Credito.objects.create_credito(
+            titular,
+            capital,
+            fecha,
+            tasa_interes,
+            cant_cuota
+        )
+        Cuota.objects.create_cuotas(
+            credito_obj,
             capital,
             fecha,
             tasa_interes,
@@ -30,8 +37,6 @@ class CreditoCreateView(FormView):
         )
 
         return super(CreditoCreateView, self).form_valid(form)
-
-    
 
 
 class CreditoDeleteView(DeleteView):
