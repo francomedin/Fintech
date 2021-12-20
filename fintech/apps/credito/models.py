@@ -47,13 +47,16 @@ class Credito(models.Model):
 
 class Cuota(models.Model):
     PAGADO = 'Pagado'
+    # Cuota pendiente es aquella que no ha vencido.
     PENDIENTE = 'Pendiente'
-    VENCIDO = 'Vencido'
-
+    SIN_PAGO = 'No realizo Pago'
+    # Cuota pago_parcial es aquella en donde el pago es inferior al monto de la cuota.
+    PAGO_PARCIAL = 'Pago parcial'
     SITUACION = (
         (PAGADO, 'Pagado'),
         (PENDIENTE, 'Pendiente de Pago'),
-        (VENCIDO, 'Vencido'),
+        (PAGO_PARCIAL, 'Pago Parcial'),
+        (SIN_PAGO, 'No realizo Pago'),
 
     )
     situacion = models.CharField(
@@ -63,6 +66,7 @@ class Cuota(models.Model):
     interes = models.FloatField()
     numero_cuota = models.PositiveIntegerField()
     monto_cuota = models.FloatField()
+    mora_cuota = models.FloatField(default=0)
     fecha_pago = models.DateField()
     credito = models.ForeignKey(Credito, on_delete=models.PROTECT)
     objects = CuotaManager()

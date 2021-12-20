@@ -1,7 +1,8 @@
 from django.db import models
 from dateutil.relativedelta import relativedelta
 
-# Aca vamos a calcular la cuota en base a la tasa de interes, cant_cuotas y monto.
+#En caso de que la fecha se vea modificada va a ser necesario actualizar todas las cuotas.
+
 
 
 class CuotaManager(models.Manager):
@@ -23,10 +24,10 @@ class CuotaManager(models.Manager):
         # Tratamiento de la fecha
 
         dia = fecha.day
-        mes = 0
+        mes = 1
 
         if dia > 15:
-            mes = 1
+            mes = 2
 
         # Se crean todas las cuotas que perteneceran al credito
         i = 1
@@ -41,13 +42,16 @@ class CuotaManager(models.Manager):
 
                 capital_amortizable=capital_remanente,
                 interes=interes_monto,
-                numero_cuota=i,
+                numero_cuota=i + 1,
                 amortizacion=amortizacion,
                 monto_cuota=valor_cuota,
-                fecha_pago=fecha + relativedelta(months=(i+mes)),
+                fecha_pago=fecha + relativedelta(day=10, months=i+mes),
+
                 credito=credito_obj
 
             )
+            mes = 0
+
             capital_remanente = round(capital_remanente-amortizacion, 2)
 
 
@@ -66,3 +70,7 @@ class CreditoManager(models.Manager):
         return credito_obj
         # def update_mora():
         # Esto se me ocurre de 2 formas. Con un boton que se aprieta n dia del mes y calcula todas las moras
+
+
+
+

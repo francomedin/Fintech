@@ -1,15 +1,49 @@
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, DeleteView
 from django.views.generic.detail import DetailView
 from .models import Pago
+from .forms import PagoForm
 from django.urls import reverse_lazy
 # Create your views here.
 
 
-class PagoCreateView(CreateView):
+class PagoCreateView(FormView):
     model = Pago
     template_name = 'pago/pago_create.html'
-    fields = ('__all__')
+    form_class = PagoForm
+    success_url = '/'
+
+    def form_valid(self, form):
+
+        cuota = form.cleaned_data['cuota']
+        monto = form.cleaned_data['monto']
+        fecha = form.cleaned_data['fecha']
+        descripcion = form.cleaned_data['descripcion']
+        tipo = form.cleaned_data['tipo']
+        metodo = form.cleaned_data['metodo']
+        cobrador = form.cleaned_data['cobrador']
+
+        Pago.objects.cargar_pago(
+            cuota,
+            monto,
+            fecha,
+            descripcion,
+            tipo,
+            metodo,
+            cobrador
+
+        )
+        Pago.objects.set_situacion(
+            cuota,
+            monto,
+            fecha
+        )
+        Pago.objects.set_mora(
+            cuota,
+            fecha
+        )
+
+        return super(PagoCreateView, self).form_valid(form)
 
 
 class PagoDeleteView(DeleteView):

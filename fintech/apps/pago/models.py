@@ -1,6 +1,6 @@
-from apps.credito.models import Credito
+from apps.credito.models import Cuota
 from django.db import models
-
+from .managers import PagoManager
 # Create your models here.
 
 
@@ -28,11 +28,14 @@ class Cobrador(models.Model):
 
 class Pago(models.Model):
 
+    cuota = models.ForeignKey(Cuota, on_delete=models.PROTECT, default=1)
     monto = models.FloatField()
     fecha = models.DateField()
-    credito = models.ForeignKey(Credito, on_delete=models.PROTECT, default=1)
-    descripcion = models.CharField(
-        max_length=300, blank=True)
+    descripcion = models.CharField(max_length=300, blank=True)
+    # Tipo de pago: Cuota, cancelacion, embargo/juicio.
     tipo = models.ForeignKey(TipoPago, on_delete=models.PROTECT, default=1)
+    # Metodo de pago ej: transferencia
     metodo = models.ForeignKey(MetodoPago, on_delete=models.PROTECT, default=1)
+    # Cobrador que recibio el pago. ej. Fulano.
     cobrador = models.ForeignKey(Cobrador, on_delete=models.PROTECT, default=1)
+    objects = PagoManager()
