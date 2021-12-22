@@ -8,7 +8,7 @@ class Vehiculo(models.Model):
 
     vehiculo = models.CharField(max_length=150)
     modelo = models.PositiveIntegerField(blank=True, null=True)
-    descripcion = models.CharField(blank=True, null=True, max_length=200)
+    descripcion = models.TextField(blank=True, null=True, max_length=200)
     precio_mercado = models.FloatField(
         blank=True, null=True, verbose_name='Precio de Mercado')
     stock = models.BooleanField()
@@ -27,5 +27,5 @@ class Operacion (models.Model):
     responsable = models.ForeignKey(
         Cobrador, on_delete=models.PROTECT, default=1)
     monto = models.FloatField()
-    descripcion = models.CharField(max_length=200)
+    descripcion = models.TextField(max_length=200)
     vehiculo = models.ForeignKey(Vehiculo, on_delete=models.PROTECT, default=1)
