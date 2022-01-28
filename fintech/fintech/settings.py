@@ -46,7 +46,8 @@ APPS_PROPIAS = (
     'apps.pago',
     'apps.user',
     'apps.wolfmotors',
-    'apps.cambio'
+    'apps.cambio',
+    'apps.contabilidad'
 
 )
 

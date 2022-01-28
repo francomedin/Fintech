@@ -1,8 +1,7 @@
 from django.db import models
 from dateutil.relativedelta import relativedelta
 
-#En caso de que la fecha se vea modificada va a ser necesario actualizar todas las cuotas.
-
+# En caso de que la fecha se vea modificada va a ser necesario actualizar todas las cuotas.
 
 
 class CuotaManager(models.Manager):
@@ -70,7 +69,3 @@ class CreditoManager(models.Manager):
         return credito_obj
         # def update_mora():
         # Esto se me ocurre de 2 formas. Con un boton que se aprieta n dia del mes y calcula todas las moras
-
-
-
-

@@ -7,6 +7,7 @@ from apps.pago.models import Cobrador
 class Vehiculo(models.Model):
 
     vehiculo = models.CharField(max_length=150)
+    patente = models.CharField(max_length=100,default='AAA')
     modelo = models.PositiveIntegerField(blank=True, null=True)
     descripcion = models.TextField(blank=True, null=True, max_length=200)
     precio_mercado = models.FloatField(
