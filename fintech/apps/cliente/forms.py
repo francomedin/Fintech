@@ -8,7 +8,7 @@ class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
         fields = ('nombres', 'apellidos', 'dni', 'telefono', 'cbu', 'ocupacion', 'direccion',
-                  'fecha_nacimiento', 'activo', 'situacion')
+                  'fecha_nacimiento', 'activo', 'situacion', 'juicios', 'observacion')
         widgets = {
             'nombres': forms.TextInput(attrs={'class': 'form-control'}),
             'apellidos': forms.TextInput(attrs={'class': 'form-control'}),
@@ -19,6 +19,10 @@ class ClienteForm(forms.ModelForm):
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
             'fecha_nacimiento': forms.SelectDateWidget(attrs={'class': 'form-control'}, years=range(1950, (datetime.now().year-17))),
             'activo': forms.NullBooleanSelect(attrs={'class': 'form-control'}),
-            'situacion': forms.RadioSelect(attrs={'class': 'form-control'})
+            'situacion': forms.RadioSelect(attrs={'class': 'form-control'}),
+            'juicios': forms.Textarea(attrs={'class': 'form-control'}),
+            'observacion': forms.Textarea(attrs={'class': 'form-control'})
+
+
 
         }

@@ -44,6 +44,7 @@ class Cliente(models.Model):
     bcra = models.CharField(
         max_length=20, choices=BCRA, default=1
     )
+    
     activo = models.BooleanField(default=True)
     embargo = models.BooleanField(default=False)
     juicios = models.TextField(default='Sin juicios')

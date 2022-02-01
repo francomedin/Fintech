@@ -1,13 +1,142 @@
-<html>
-    <table>
+{% extends 'core/base.html' %}
 
-        <ul>
-            
-            {% for i in clientes %}
-            <li>{{i.nombres}}</li>
-            {% endfor %}
-                
-           
-        </ul>
-    </table>
-</html>
+{% block title %}
+Listado de Clientes
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+
+    <div class="row" style="padding-top: 10px;">
+        <h1 style="text-align: center;">Listado de clientes</h1>
+
+    </div>
+
+
+</div>
+
+<div class="container-fluid">
+
+
+    <!-- Buscador y boton -->
+    <form class="container-fluid" method="GET" style="margin-top: 25px;"> {% csrf_token %}
+        <div class="row">
+            <div class="col-6">
+                <input id="kword" name="kword" class="form-control" type="text"
+                    placeholder="Buscar Cliente por apellido">
+            </div>
+
+            <div class="col-2">
+                <button class="btn btn-primary" type="submit">Buscar</button>
+            </div>
+
+            <div class="col-4" style="text-align: right;"><a class="btn btn-success" role="button"
+                    href="{%url 'cliente_app:cliente_create'%}">Nuevo
+                    Cliente</a>
+            </div>
+        </div>
+    </form>
+
+    <div class="container-fluid" style="margin-top:10px;">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Apellido</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">DNI</th>
+                    <th scope="col">Telefono</th>
+                    <th scope="col">CBU</th>
+                    <th scope="col">Situacion</th>
+                    <th scope="col">Detalles</th>
+                    <th scope="col">Creditos</th>
+
+
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for cliente in clientes %}
+
+                <tr>
+                    <th scope="row">{{cliente.apellidos}}</th>
+                    <th style="white-space:nowrap"> {{cliente.nombres}}</th>
+                    <td>{{cliente.dni}}</td>
+                    <td>{{cliente.telefono}}</td>
+                    <td>{{cliente.cbu}}</td>
+                    <td>{{cliente.situacion}}</td>
+
+                    <td>
+                        <a class="btn btn-outline-success" role="button"
+                            href="{%url 'cliente_app:cliente_detail' cliente.id%}">Ver</a>
+
+                    </td>
+                    <td>
+                        <a class="btn btn-outline-warning" role="button"
+                            href="{%url 'credito_app:credito_list' cliente.id%}">Creditos</a>
+                    </td>
+
+
+
+
+
+                </tr>
+
+                {% endfor %}
+
+
+            </tbody>
+        </table>
+    </div>
+    <div class="container-fluid">
+
+        <nav aria-label="Page navigation example">
+
+            {% if is_paginated %}
+            <ul class="pagination">
+
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{page_obj.previous_page_number}}">Anterior</a>
+                </li>
+                {% endif %}
+
+                {% for pagina in paginator.page_range %}
+
+
+                {% ifequal pagina page_obj.number %}
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="?page={{pagina}}">{{pagina}}</a>
+                </li>
+                {%else %}
+                <li class="page-item"><a class="page-link" href="?page={{pagina}}">{{pagina}}</a></li>
+
+                {% endifequal %}
+
+
+
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{page_obj.next_page_number}}">Siguiente</a>
+                </li>
+
+                {% endif %}
+
+            </ul>
+            {% endif %}
+
+
+        </nav>
+    </div>
+
+</div>
+<!--Fin buscador y boton-->
+
+
+
+
+
+</div>
+
+{% endblock content %}

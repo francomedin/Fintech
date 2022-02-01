@@ -59,12 +59,17 @@ class CreditoManager(models.Manager):
     # Este metodo recibe como parametro capital, interes y cant_cuotas, crea un objeto credito.
     def create_credito(self, titular, capital, fecha, p_tasa_interes, cant_cuota):
 
+        numerador = capital*(p_tasa_interes)
+        denominador = 1-((1+p_tasa_interes)**(-cant_cuota))
+        valor_cuota = round(numerador/denominador, 2)
+
         credito_obj = self.create(
             titular=titular,
             capital=capital,
             fecha_prestamo=fecha,
-            tasa_interes=p_tasa_interes,
-            cant_cuota=cant_cuota
+            tasa_interes=p_tasa_interes * 100,
+            cant_cuota=cant_cuota,
+            monto_cuota=valor_cuota
         )
         return credito_obj
         # def update_mora():

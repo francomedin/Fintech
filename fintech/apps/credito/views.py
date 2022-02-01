@@ -2,9 +2,50 @@ from django.views.generic.edit import CreateView, FormView, UpdateView
 from django.views.generic import ListView, DeleteView
 from django.views.generic.detail import DetailView
 from .models import Credito, Cuota
+from apps.cliente.models import Cliente
 from django.urls import reverse, reverse_lazy
-from .forms import CreditoForm
+from .forms import CreditoForm, CreditoPkForm
 # Create your views here.
+
+
+class CreditoPkCreate(FormView):
+
+    # Creacion de credito con la pk del cliente seteada
+
+    template_name = 'credito/credito_create.html'
+    form_class = CreditoPkForm
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'credito_app:credito_list',
+            kwargs={'pk': self.kwargs['pk']}
+        )
+
+    def form_valid(self, form):
+
+        palabra_clave = self.kwargs['pk']
+        titular = Cliente.objects.get(pk=palabra_clave)
+        capital = form.cleaned_data['capital']
+        tasa_interes = form.cleaned_data['tasa_interes']/100
+        cant_cuota = form.cleaned_data['cant_cuota']
+        fecha = form.cleaned_data['fecha_prestamo']
+
+        credito_obj = Credito.objects.create_credito(
+            titular,
+            capital,
+            fecha,
+            tasa_interes,
+            cant_cuota
+        )
+        Cuota.objects.create_cuotas(
+            credito_obj,
+            capital,
+            fecha,
+            tasa_interes,
+            cant_cuota
+        )
+
+        return super(CreditoPkCreate, self).form_valid(form)
 
 
 class CreditoCreateView(FormView):
@@ -57,7 +98,23 @@ class CreditoUpdateView(UpdateView):
 
 
 class CreditoListView(ListView):
-    model = Credito
+    #model = Credito
     template_name = 'credito/credito_list.html'
     # Poner Paginacion
     context_object_name = 'creditos'
+    paginate_by = 10
+    ordering = 'fecha_prestamo'
+
+    def get_queryset(self):
+        palabra_clave = self.kwargs['pk']
+
+        lista = Credito.objects.filter(
+            titular=palabra_clave).order_by('-fecha_prestamo')
+        return lista
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        palabra_clave = self.kwargs['pk']
+        titular = Cliente.objects.filter(pk=palabra_clave)
+        context["titular"] = titular[0]
+        return context

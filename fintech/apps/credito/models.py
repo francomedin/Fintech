@@ -14,14 +14,13 @@ class Mora(models.Model):
 
 class Credito(models.Model):
 
-    OK = 'ok'
+    OK = 'Pagando'
     MORA_TEMPRANA = 'Mora Temprana'
     MORA_TARDIA = 'Mora Tardia'
     SITUACION_JUDICIAL = 'Situacion Judicial'
 
     ESTADOS = (
         (OK, 'Al dia'),
-
         (MORA_TEMPRANA, 'Atraso entre 1 y 30 días'),
         (MORA_TARDIA, 'Atraso > 30 días'),
         (SITUACION_JUDICIAL, 'Atraso > 90 días')
@@ -31,6 +30,7 @@ class Credito(models.Model):
     fecha_prestamo = models.DateField()
     tasa_interes = models.FloatField()
     cant_cuota = models.IntegerField()
+    monto_cuota = models.FloatField(default=0)
     mora = models.ForeignKey(Mora, on_delete=models.PROTECT, default=1)
     monto_mora = models.FloatField(default=0)
     activo = models.BooleanField(default=True)
@@ -68,5 +68,9 @@ class Cuota(models.Model):
     monto_cuota = models.FloatField()
     mora_cuota = models.FloatField(default=0)
     fecha_pago = models.DateField()
-    credito = models.ForeignKey(Credito, on_delete=models.PROTECT)
+    credito = models.ForeignKey(
+        Credito, on_delete=models.CASCADE, related_name='credito_pago')
     objects = CuotaManager()
+
+    def __str__(self):
+        return str(self.monto_cuota)

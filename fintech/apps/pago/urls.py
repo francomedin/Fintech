@@ -18,7 +18,7 @@ urlpatterns = [
     ),
 
     path(
-        'pago/list',
+        'pago/list/<pk>/',
         PagoListView.as_view(),
         name='pago_list'
     ),

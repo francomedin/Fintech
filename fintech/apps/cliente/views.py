@@ -33,7 +33,7 @@ class ClienteDeleteView(DeleteView):
 
 
 class ClienteDetailView(DetailView):
-    
+
     model = Cliente
     template_name = 'cliente/cliente_detail.html'
 
@@ -57,4 +57,13 @@ class ClienteListView(ListView):
     model = Cliente
     # Poner Paginacion
     context_object_name = 'clientes'
+    paginate_by = 10
     template_name = 'cliente/cliente_list.html'
+    ordering = 'apellidos'
+
+    def get_queryset(self):
+        palabra_clave = self.request.GET.get("kword", '')
+        lista = Cliente.objects.filter(
+            apellidos__icontains=palabra_clave
+        )
+        return lista

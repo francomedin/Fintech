@@ -68,3 +68,11 @@ class PagoListView(ListView):
     template_name = 'pago/pago_list.html'
     # Poner Paginacion
     context_object_name = 'pagos'
+    paginate_by = 10
+
+    def get_queryset(self):
+        palabra_clave = self.kwargs['pk']
+
+        lista = Pago.objects.filter(
+            cuota=palabra_clave).order_by('fecha')
+        return lista

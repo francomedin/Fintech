@@ -7,6 +7,10 @@ class MoraAdmin(admin.ModelAdmin):
     list_display = ('descripcion', 'tasa')
 
 
-admin.site.register(Credito)
+class CreditoAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'titular')
+
+
+admin.site.register(Credito,CreditoAdmin)
 admin.site.register(Mora, MoraAdmin)
 admin.site.register(Cuota)

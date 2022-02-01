@@ -5,7 +5,8 @@ from apps.credito.views import (
     CreditoListView,
     CreditoUpdateView,
     CreditoDeleteView,
-    CreditoDetailView
+    CreditoDetailView,
+    CreditoPkCreate
 )
 
 app_name = 'credito_app'
@@ -16,15 +17,22 @@ urlpatterns = [
         CreditoCreateView.as_view(),
         name='credito_create'
     ),
-
+    # Crear credito con pk de cliente
     path(
-        'credito/list',
+        'credito/create/<pk>/',
+        CreditoPkCreate.as_view(),
+        name='credito_create_pk'
+    ),
+
+    # Listado de creditos filtrados por cliente
+    path(
+        'credito/list/<pk>/',
         CreditoListView.as_view(),
         name='credito_list'
     ),
 
     path(
-        'credito/update',
+        'credito/update/<pk>/',
         CreditoUpdateView.as_view(),
         name='credito_update'
     ),
