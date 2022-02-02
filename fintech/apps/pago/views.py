@@ -2,9 +2,10 @@ from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, DeleteView
 from django.views.generic.detail import DetailView
 from .models import Pago
-from .forms import PagoForm
+from .forms import PagoForm, PagoPkForm
 from django.urls import reverse_lazy
 # Create your views here.
+from apps.credito.models import Cuota
 
 
 class PagoCreateView(FormView):
@@ -15,7 +16,8 @@ class PagoCreateView(FormView):
 
     def form_valid(self, form):
 
-        cuota = form.cleaned_data['cuota']
+        palabra_clave = self.kwargs['pk']
+        cuota = Cuota.objects.get(pk=palabra_clave)
         monto = form.cleaned_data['monto']
         fecha = form.cleaned_data['fecha']
         descripcion = form.cleaned_data['descripcion']
@@ -38,11 +40,12 @@ class PagoCreateView(FormView):
             monto,
             fecha
         )
+        """
         Pago.objects.set_mora(
             cuota,
             fecha
         )
-
+            """
         return super(PagoCreateView, self).form_valid(form)
 
 
@@ -76,3 +79,52 @@ class PagoListView(ListView):
         lista = Pago.objects.filter(
             cuota=palabra_clave).order_by('fecha')
         return lista
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        palabra_clave = self.kwargs['pk']
+        cuota = Cuota.objects.get(pk=palabra_clave)
+        context["cuota"] = cuota
+        return context
+
+# Pk passed as parameter.
+
+
+class PagoPkCreateView(FormView):
+
+    template_name = 'pago/pago_create.html'
+    form_class = PagoPkForm
+    success_url = '/'
+
+    def form_valid(self, form):
+        palabra_clave = self.kwargs['pk']
+        cuota = Cuota.objects.get(pk=palabra_clave)
+        monto = form.cleaned_data['monto']
+        fecha = form.cleaned_data['fecha']
+        descripcion = form.cleaned_data['descripcion']
+        tipo = form.cleaned_data['tipo']
+        metodo = form.cleaned_data['metodo']
+        cobrador = form.cleaned_data['cobrador']
+
+        Pago.objects.cargar_pago(
+            cuota,
+            monto,
+            fecha,
+            descripcion,
+            tipo,
+            metodo,
+            cobrador
+
+        )
+        Pago.objects.set_situacion(
+            cuota,
+            monto,
+            fecha
+        )
+        """
+        Pago.objects.set_mora(
+            cuota,
+            fecha
+        )
+        """
+        return super(PagoCreateView, self).form_valid(form)

@@ -4,23 +4,29 @@ from apps.pago.views import (
     PagoDetailView,
     PagoUpdateView,
     PagoListView,
+    PagoPkCreateView
 )
 from django.urls import path
 
 app_name = 'pago_app'
 
 urlpatterns = [
-    
+
     path(
         'pago/create',
         PagoCreateView.as_view(),
         name='pago_create'
     ),
+    path(
+        'pago/create/<pk>/',
+        PagoPkCreateView.as_view(),
+        name='pago_create_pk'
+    ),
 
     path(
         'pago/list/<pk>/',
         PagoListView.as_view(),
-        name='pago_list'
+        name='pago_list_pk'
     ),
 
     path(

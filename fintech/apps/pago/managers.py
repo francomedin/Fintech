@@ -18,31 +18,31 @@ class PagoManager(models.Manager):
 
         )
 
-    def set_situacion(self, cuota, monto, fecha):
+    def set_situacion_cuota(self, cuota, monto, fecha):
 
         credito = Credito.objects.filter(pk=cuota.credito.pk)
         situacion = ''
-        saldo_mora = 0 + credito.monto_mora
+        saldo_mora = 0 + cuota.monto_mora
 
         # Paga a fecha
         if cuota.fecha_pago >= fecha:
 
             # Paga y se queda al dia
-            if cuota.monto_cuota + saldo_mora == monto:
+            if (cuota.monto_cuota + saldo_mora) == monto:
                 situacion = 'Pagado'
                 saldo_mora = 0
-                credito.monto_mora = 0
+                cuota.monto_mora = 0
             # El monto abonado difere del saldo adeudado
             else:
                 # Pago de mas
                 if cuota.monto_cuota + saldo_mora < monto:
                     situacion = 'Pagado'
                     saldo_mora = 0
-                    # actualizo el saldo mora en el credito
-                    credito.monto_mora = 0
+                    # actualizo el saldo mora en la cuota
+                    cuota.monto_mora = 0
 
                 # Pago menos que el total adeudado
-                elif cuota.monto_cuota + saldo_mora > monto and monto > 0:
+                elif cuota.monto_cuota + saldo_mora > monto:
                     situacion = 'Pago parcial'
                     # actualizo la mora DE LA CUOTA.
                     # Si la mora = 0 va a ser el monto de cuota - lo pagado
@@ -65,12 +65,14 @@ class PagoManager(models.Manager):
         # Paga fuera de fecha
         else:
             print('hola')
+
             # Deberia calcular la mora hasta el dia
             # Imputar el pago a los saldos pendientes del credito
             # Imputar a la cuota del mes en curso.
             # Crear funcion que calcule la mora
 
-    def calcular_mora(self, fecha_vencimiento, fecha_pago, tasa, saldo_adeudado):
+
+"""    def calcular_mora(self, fecha_vencimiento, fecha_pago, tasa, saldo_adeudado):
 
         dias = fecha_vencimiento-fecha_pago
         tasa_diaria = round(tasa/30.4166, 2)
@@ -106,3 +108,4 @@ class PagoManager(models.Manager):
     # Cuando se realice un pago menor a la cuota se cargara el atributo "mora cuota" con el saldo adeudado
     # Al dia 10 se cargaran los saldos en el atributo mora del credito.
     # Porque no actualziar el dai del pago y los dias 10?: Porque se va a capitalizar.
+"""

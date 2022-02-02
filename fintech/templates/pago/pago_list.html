@@ -1,14 +1,89 @@
+{% extends 'core/base.html' %}
 
-<html>
-    <table>
+{% block title %}
+Cuotas
+{% endblock title %}
 
-        <ul>
-            
-            {% for i in pagos %}
-            <li>{{i.monto}}</li>
-            {% endfor %}
-                
-           
-        </ul>
-    </table>
-</html>
+{% block content %}
+<div class="container">
+
+    <div class="row" style="padding-top: 10px;">
+        <h1 style="text-align: center;background-color: lightgrey;">Listado de Pagos: </h1>
+
+
+
+
+    </div>
+
+    <div class="container-fluid">
+
+
+
+        <form class="container-fluid" method="GET" style="margin-top: 25px;"> {% csrf_token %}
+            <div class="row">
+                <div class="col-6">
+
+                </div>
+
+                <div class="col-2">
+
+                </div>
+
+            </div>
+        </form>
+
+
+        <div class="container-fluid" style="margin-top:10px;">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Cuota Nro:</th>
+                        <th scope="col">Monto Pagado</th>
+                        <th scope="col">Fecha Pago</th>
+                        <th scope="col">Tipo</th>
+                        <th scope="col">Metodo</th>
+                        <th scope="col">Cobrador</th>
+                        <th scope="col">Detalles</th>
+
+
+
+
+
+
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for pago in pagos %}
+
+                    <tr>
+                        <td>{{pago.numero_cuota}}</td>
+                        <td>${{pago.monto}}</td>
+                        <td>{{pago.fecha}}</td>
+                        <td>{{pago.tipo}}</td>
+                        <td>{{pago.metodo}}</td>
+                        <td>{{pago.cobrador}}</td>
+
+
+
+                    </tr>
+
+                    {% endfor %}
+
+
+                </tbody>
+            </table>
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+</div>
+
+{% endblock content %}

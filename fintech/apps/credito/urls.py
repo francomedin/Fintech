@@ -6,7 +6,8 @@ from apps.credito.views import (
     CreditoUpdateView,
     CreditoDeleteView,
     CreditoDetailView,
-    CreditoPkCreate
+    CreditoPkCreate,
+    CuotaListView
 )
 
 app_name = 'credito_app'
@@ -48,5 +49,11 @@ urlpatterns = [
         CreditoDeleteView.as_view(),
         name='credito_delete'
     ),
+    path(
+        'cuota/list/<pk>/',
+        CuotaListView.as_view(),
+        name='cuota_list'
+    ),
+
 
 ]

@@ -25,3 +25,28 @@ class PagoForm(forms.ModelForm):
             'label': 'Tasa de Interes (Numero entero)'}
 
     )
+
+
+class PagoPkForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Pago
+        fields = ('monto', 'fecha',
+                  'descripcion', 'tipo', 'metodo', 'cobrador')
+
+    monto = forms.FloatField(
+        label='Monto',
+        required=True)
+    monto.widget.attrs.update({'placeholder': 'Ingrese el Monto'})
+
+    fecha = forms.DateField(
+        widget=forms.widgets.DateInput(attrs={'type': 'date'}))
+
+    descripcion = forms.CharField()
+
+    descripcion.widget.attrs.update(
+        {'placeholder': 'Ingresar descripcion',
+            'label': 'Tasa de Interes (Numero entero)'}
+
+    )

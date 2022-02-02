@@ -1,0 +1,165 @@
+{% extends 'core/base.html' %}
+
+{% block title %}
+Cuotas
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+
+    <div class="row" style="padding-top: 10px;">
+        <h1 style="text-align: center;background-color: lightgrey;">Listado de cuotas:</h1>
+        <div style="text-align: center;" class="col-6">
+            <h3>Titular: {{credito.titular}}</h3>
+        </div>
+        <div style="text-align: center;" class="col-6">
+            <h3>Id Credito: {{credito.pk}}</h3>
+        </div>
+        <div style="text-align: center;" class="col-6">
+            <h3>Capital: ${{credito.capital}}</h3>
+        </div>
+        <div style="text-align: center;" class="col-6">
+            <h3>Cant Cuotas: {{credito.cant_cuota}}</h3>
+        </div>
+        <div style="text-align: center;" class="col-6">
+            <h3>Interes: {{credito.tasa_interes}}%</h3>
+        </div>
+
+        <div style="text-align: center;" class="col-6">
+            <h3>Fecha Otorgamiento: {{credito.fecha_prestamo}}</h3>
+        </div>
+
+    </div>
+
+
+</div>
+
+<div class="container-fluid">
+
+
+    
+
+
+    <div class="container-fluid" style="margin-top:10px;">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Cuota Nro:</th>
+                    <th scope="col">Monto Cuota</th>
+                    <th scope="col">Fecha Vencimiento</th>
+                    <th scope="col">Situacion</th>
+                    <th scope="col">Amortizacion</th>
+                    <th scope="col">Interes</th>
+                    <th scope="col">Mora</th>
+                    <th scope="col">Cargar Mora</th>
+                    <th scope="col">Pagos</th>
+
+
+
+
+
+
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for cuota in cuotas %}
+
+                <tr>
+                    <td>{{cuota.numero_cuota}}</td>
+                    <td>${{cuota.monto_cuota}}</td>
+                    <td>{{cuota.fecha_pago}}</td>
+
+                    {% if cuota.situacion == 'Pendiente' %}
+                    <td style="background-color: lightblue;">{{cuota.situacion}}</td>
+                    {% elif cuota.situacion == 'Pagado' %}
+                    <td style="background-color: lightgreen;">{{cuota.situacion}}</td>
+                    {% elif cuota.situacion == 'No realizo Pago' %}
+                    <td style="background-color: red;">{{cuota.situacion}}</td>
+                    {% elif cuota.situacion == 'Pago Parcial' %}
+                    <td style="background-color: yellow;">{{cuota.situacion}}</td>
+
+                    {% endif %}
+
+                    <td>${{cuota.amortizacion}}</td>
+                    <td>${{cuota.interes}}</td>
+                    <td>${{cuota.mora_cuota}}</td>
+
+
+
+                    <td>
+                        <a class="btn btn-outline-warning" role="button"
+                            href="{%url 'pago_app:pago_list_pk' cuota.pk%}">Pagos</a>
+
+                    </td>
+                    <td>
+                        <a class="btn btn-outline-success" role="button"
+                            href="{%url 'pago_app:pago_create_pk' cuota.pk%}">Nuevo Pago</a>
+
+                    </td>
+
+
+
+
+                </tr>
+
+                {% endfor %}
+
+
+            </tbody>
+        </table>
+    </div>
+    <div class=" container-fluid">
+
+        <nav aria-label="Page navigation example">
+
+            {% if is_paginated %}
+            <ul class="pagination">
+
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{page_obj.previous_page_number}}">Anterior</a>
+                </li>
+                {% endif %}
+
+                {% for pagina in paginator.page_range %}
+
+
+                {% ifequal pagina page_obj.number %}
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="?page={{pagina}}">{{pagina}}</a>
+                </li>
+                {%else %}
+                <li class="page-item"><a class="page-link" href="?page={{pagina}}">{{pagina}}</a>
+                </li>
+
+                {% endifequal %}
+
+
+
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{page_obj.next_page_number}}">Siguiente</a>
+                </li>
+
+                {% endif %}
+
+            </ul>
+            {% endif %}
+
+
+        </nav>
+    </div>
+
+</div>
+<!--Fin buscador y boton-->
+
+
+
+
+
+</div>
+
+{% endblock content %}

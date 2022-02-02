@@ -98,9 +98,9 @@ class CreditoUpdateView(UpdateView):
 
 
 class CreditoListView(ListView):
-    #model = Credito
+
     template_name = 'credito/credito_list.html'
-    # Poner Paginacion
+
     context_object_name = 'creditos'
     paginate_by = 10
     ordering = 'fecha_prestamo'
@@ -117,4 +117,23 @@ class CreditoListView(ListView):
         palabra_clave = self.kwargs['pk']
         titular = Cliente.objects.filter(pk=palabra_clave)
         context["titular"] = titular[0]
+        return context
+
+
+class CuotaListView(ListView):
+    model = Cuota
+    template_name = 'credito/cuota_list.html'
+    context_object_name = 'cuotas'
+
+    def get_queryset(self):
+        palabra_clave = self.kwargs['pk']
+        lista = Cuota.objects.filter(
+            credito=palabra_clave).order_by('numero_cuota')
+        return lista
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        palabra_clave = self.kwargs['pk']
+        credito = Credito.objects.get(pk=palabra_clave)
+        context["credito"] = credito
         return context
