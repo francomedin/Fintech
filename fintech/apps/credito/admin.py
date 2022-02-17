@@ -4,13 +4,17 @@ from .models import Credito, Mora, Cuota
 
 
 class MoraAdmin(admin.ModelAdmin):
-    list_display = ('descripcion', 'tasa')
+    list_display = ('descripcion_mora', 'monto_mora')
 
 
 class CreditoAdmin(admin.ModelAdmin):
     list_display = ('pk', 'titular')
 
 
-admin.site.register(Credito,CreditoAdmin)
+class CuotaAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'credito', 'situacion')
+
+
+admin.site.register(Credito, CreditoAdmin)
 admin.site.register(Mora, MoraAdmin)
-admin.site.register(Cuota)
+admin.site.register(Cuota, CuotaAdmin)

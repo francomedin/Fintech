@@ -1,15 +1,7 @@
 from django.db import models
-from .managers import CreditoManager, CuotaManager
+from .managers import CreditoManager, CuotaManager, MoraManager
 from apps.cliente.models import Cliente
 # Create your models here.
-
-
-class Mora(models.Model):
-    descripcion = models.CharField(max_length=50)
-    tasa = models.FloatField(default=0.15)
-
-    def __str__(self):
-        return self.descripcion
 
 
 class Credito(models.Model):
@@ -31,8 +23,6 @@ class Credito(models.Model):
     tasa_interes = models.FloatField()
     cant_cuota = models.IntegerField()
     monto_cuota = models.FloatField(default=0)
-    mora = models.ForeignKey(Mora, on_delete=models.PROTECT, default=1)
-    monto_mora = models.FloatField(default=0)
     activo = models.BooleanField(default=True)
     situacion = models.CharField(max_length=20, choices=ESTADOS, default=OK)
     objects = CreditoManager()
@@ -49,16 +39,17 @@ class Cuota(models.Model):
     PAGADO = 'Pagado'
     # Cuota pendiente es aquella que no ha vencido.
     PENDIENTE = 'Pendiente'
-    SIN_PAGO = 'No realizo Pago'
+    SIN_PAGO = 'No Pago'
     # Cuota pago_parcial es aquella en donde el pago es inferior al monto de la cuota.
     PAGO_PARCIAL = 'Pago parcial'
     SITUACION = (
         (PAGADO, 'Pagado'),
-        (PENDIENTE, 'Pendiente de Pago'),
+        (PENDIENTE, 'Pago Pendiente'),
         (PAGO_PARCIAL, 'Pago Parcial'),
-        (SIN_PAGO, 'No realizo Pago'),
+        (SIN_PAGO, 'No Pago'),
 
     )
+
     situacion = models.CharField(
         max_length=30, choices=SITUACION, default=PENDIENTE)
     capital_amortizable = models.FloatField()
@@ -66,7 +57,7 @@ class Cuota(models.Model):
     interes = models.FloatField()
     numero_cuota = models.PositiveIntegerField()
     monto_cuota = models.FloatField()
-    mora_cuota = models.FloatField(default=0)
+    total_pagado = models.FloatField(default=0)
     fecha_pago = models.DateField()
     credito = models.ForeignKey(
         Credito, on_delete=models.CASCADE, related_name='credito_pago')
@@ -74,3 +65,24 @@ class Cuota(models.Model):
 
     def __str__(self):
         return str(self.monto_cuota)
+
+
+class Mora(models.Model):
+
+    descripcion_mora = models.CharField(max_length=50, blank=True, null=True)
+    monto_mora = models.FloatField(default=0)
+
+    cargador_mora = models.CharField(
+        verbose_name='Cargó',
+        max_length=20,
+        choices=(('Franco', 'Franco'), ('Agustin', 'Agustin')),
+        default='Franco'
+    )
+    created = models.DateField(auto_now_add=True, blank=True, null=True)
+    updated = models.DateField(auto_now=True, blank=True, null=True)
+    cuota = models.OneToOneField(
+        Cuota, on_delete=models.CASCADE, related_name='mora')
+    objects = MoraManager()
+
+    def __str__(self):
+        return str(self.pk)

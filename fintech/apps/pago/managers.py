@@ -2,6 +2,9 @@ from django.db import models
 from apps.credito.managers import CuotaManager
 from apps.credito.models import Cuota, Credito
 
+from datetime import datetime
+import calendar
+
 
 class PagoManager(models.Manager):
 
@@ -17,95 +20,108 @@ class PagoManager(models.Manager):
             cobrador=cobrador
 
         )
+        # Al cargar un pago quiere que:
+        # Cambiar situacion.
+        self.set_situacion(cuota, monto)
+        # Envie el saldo de las cuotas no pagadas a Mora.
+        # self.cargar_saldos_morosos()
 
-    def set_situacion_cuota(self, cuota, monto, fecha):
+    def set_situacion(self, cuota, monto_pagado):
+        today = datetime.now()
 
-        credito = Credito.objects.filter(pk=cuota.credito.pk)
-        situacion = ''
-        saldo_mora = 0 + cuota.monto_mora
+        self.set_no_pagadas(today)
+        self.set_pagadas(cuota, monto_pagado)
 
-        # Paga a fecha
-        if cuota.fecha_pago >= fecha:
+        """Actualizar situacion de cuotas pendites a: pagadas, pago parcial y no pagadas."""
 
-            # Paga y se queda al dia
-            if (cuota.monto_cuota + saldo_mora) == monto:
-                situacion = 'Pagado'
-                saldo_mora = 0
-                cuota.monto_mora = 0
-            # El monto abonado difere del saldo adeudado
+    def set_pagadas(self, cuota, monto_pagado):
+
+        total_pagado = 0
+        pagos = self.filter(cuota=cuota, monto__gte=0)
+
+        # Verifico si hay pagos previos, incluye el pago que estoy cargando.
+        if len(pagos) > 1:
+            for pago in pagos:
+                total_pagado += pago.monto
+
+            if cuota.mora_cuota > 0:
+                if total_pagado >= cuota.mora_cuota:
+
+                    cuota.situacion = 'Pagado'
+                    cuota.mora_cuota = 0
+                    cuota.total_pagado = total_pagado
+
+                # La suma de los pagos es menor a la mora.
+                else:
+                    cuota.situacion = 'Pago Parcial'
+                    cuota.mora_cuota -= total_pagado
+                    cuota.total_pagado = total_pagado
+            # Hay mas de un pago y no hay mora.
             else:
-                # Pago de mas
-                if cuota.monto_cuota + saldo_mora < monto:
-                    situacion = 'Pagado'
-                    saldo_mora = 0
-                    # actualizo el saldo mora en la cuota
-                    cuota.monto_mora = 0
+                # Paga el total
+                if total_pagado >= cuota.monto_cuota:
+                    cuota.situacion = 'Pagado'
+                    cuota.mora_cuota = 0
+                    cuota.total_pagado = total_pagado
+                # Paga una parte.
+                else:
+                    cuota.situacion = 'Pago Parcial'
+                    cuota.mora_cuota = cuota.monto_cuota - total_pagado
+                    cuota.total_pagado = total_pagado
 
-                # Pago menos que el total adeudado
-                elif cuota.monto_cuota + saldo_mora > monto:
-                    situacion = 'Pago parcial'
-                    # actualizo la mora DE LA CUOTA.
-                    # Si la mora = 0 va a ser el monto de cuota - lo pagado
-                    if saldo_mora == 0:
-                        saldo_mora = cuota.monto_cuota - monto
-
-                    # En caso de que ya haya mora, el saldo pendiente sera
-                    # saldo_mora-monto
-                    else:
-                        saldo_mora = saldo_mora-monto
-
-                    credito.monto_mora += saldo_mora
-
-                # No Realizo ningun pago.
-                elif monto == 0:
-                    situacion = 'No realizo Pago'
-                    saldo_mora = cuota.monto_cuota1
-                    credito.monto_mora += saldo_mora
-
-        # Paga fuera de fecha
+        # No hay pagos anteriores
         else:
-            print('hola')
+            total_pagado = monto_pagado
+            # No tengo mora
+            if cuota.mora_cuota <= 0:
+                # No tengo mora y pago total
+                if total_pagado >= cuota.monto_cuota:
+                    cuota.situacion = 'Pagado'
+                    cuota.mora_cuota = 0
+                    cuota.total_pagado = total_pagado
 
-            # Deberia calcular la mora hasta el dia
-            # Imputar el pago a los saldos pendientes del credito
-            # Imputar a la cuota del mes en curso.
-            # Crear funcion que calcule la mora
+                # No tengo mora y pago parcial
+                else:
+                    cuota.situacion = 'Pago Parcial'
+                    cuota.mora_cuota = cuota.monto_cuota - total_pagado
+                    cuota.total_pagado = total_pagado
 
+            # Tengo mora, primer pago y paga parcial: Situacion que se da cuando la cuota se atrasa
+            # y no efectua pago alguno.
+            elif cuota.situacion == 'No realizo Pago':
+                if total_pagado < cuota.mora_cuota:
+                    cuota.situacion = 'Pago Parcial'
+                    cuota.mora_cuota -= total_pagado
+                    cuota.total_pagado = total_pagado
 
-"""    def calcular_mora(self, fecha_vencimiento, fecha_pago, tasa, saldo_adeudado):
-
-        dias = fecha_vencimiento-fecha_pago
-        tasa_diaria = round(tasa/30.4166, 2)
-        mora_monto = dias*tasa_diaria*saldo_adeudado
-
-        return mora_monto
-
-        # Si entra en el if esta pagando atrasado
-        if cuota.fecha_pago < fecha:
-
-            if cuota.monto_cuota > monto:
-                situacion = 'Pago parcial'
-                saldo_mora = cuota.monto_-monto
-
-            elif monto == 0:
-                situacion = 'No realizo Pago'
-                saldo_mora = cuota.monto_cuota
-
-        elif cuota.fecha_pago >= fecha and cuota.monto_cuota == monto:
-            situacion = 'Pagado'
-
-        elif cuota.fecha_pago >= fecha and cuota.monto_cuota < monto:
-            situacion = 'Pago parcial'
-            saldo_mora = cuota.monto_-monto
-
-        cuota.situacion = situacion
-        cuota.mora_cuota = saldo_mora
+            # Tengo mora y paga el saldo total:
+                else:
+                    cuota.situacion = 'Pagado'
+                    cuota.mora_cuota = 0
+                    cuota.total_pagado = total_pagado
 
         cuota.save()
-        credito.save()
-    # Calcular la mora todos los 10.
-    # La mora se tratara de la siguiente forma:
-    # Cuando se realice un pago menor a la cuota se cargara el atributo "mora cuota" con el saldo adeudado
-    # Al dia 10 se cargaran los saldos en el atributo mora del credito.
-    # Porque no actualziar el dai del pago y los dias 10?: Porque se va a capitalizar.
-"""
+
+    def set_no_pagadas(self, today):
+        # Si el dia de la fecha es mayor que 10 actualiza
+        # situaciones "No pagadas"
+
+        if today.day > 2:
+
+            cuotas = []
+            # Devuelve una tupa con el inicio y final del mes.
+            month_range = calendar.monthrange(today.year, today.month)
+
+            # Obtengo las cuotas pendientes de pagos del mes
+            cuotas = Cuota.objects.filter(
+                fecha_pago__gte=f"{today.year}-{today.month}-{month_range[0]}",
+                fecha_pago__lte=f"{today.year}-{today.month}-{month_range[1]}",
+                situacion='Pendiente'
+            )
+
+            for cuota in cuotas:
+                cuota.situacion = 'No realizo Pago'
+                cuota.mora_cuota = cuota.monto_cuota
+                cuota.save()
+
+   

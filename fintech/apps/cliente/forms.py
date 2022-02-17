@@ -9,6 +9,9 @@ class ClienteForm(forms.ModelForm):
         model = Cliente
         fields = ('nombres', 'apellidos', 'dni', 'telefono', 'cbu', 'ocupacion', 'direccion',
                   'fecha_nacimiento', 'activo', 'situacion', 'juicios', 'observacion')
+
+      
+        
         widgets = {
             'nombres': forms.TextInput(attrs={'class': 'form-control'}),
             'apellidos': forms.TextInput(attrs={'class': 'form-control'}),

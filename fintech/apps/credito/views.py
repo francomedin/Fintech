@@ -1,10 +1,10 @@
 from django.views.generic.edit import CreateView, FormView, UpdateView
-from django.views.generic import ListView, DeleteView
+from django.views.generic import ListView, DeleteView, TemplateView
 from django.views.generic.detail import DetailView
-from .models import Credito, Cuota
+from .models import Credito, Cuota, Mora
 from apps.cliente.models import Cliente
 from django.urls import reverse, reverse_lazy
-from .forms import CreditoForm, CreditoPkForm
+from .forms import CreditoForm, CreditoPkForm, MoraFormPk
 # Create your views here.
 
 
@@ -137,3 +137,76 @@ class CuotaListView(ListView):
         credito = Credito.objects.get(pk=palabra_clave)
         context["credito"] = credito
         return context
+
+
+class MoraCreatePk(FormView):
+
+    # Creacion de credito con la pk del cliente seteada
+
+    template_name = 'credito/mora_create.html'
+    form_class = MoraFormPk
+
+    def get_success_url(self):
+        return reverse_lazy(
+            'credito_app:mora_list_pk',
+            kwargs={'pk': self.kwargs['pk']}
+        )
+
+    def form_valid(self, form):
+
+        palabra_clave = self.kwargs['pk']
+        cuota = Cuota.objects.get(pk=palabra_clave)
+        monto_mora = form.cleaned_data['monto_mora']
+        descripcion_mora = form.cleaned_data['descripcion_mora']
+
+        # Creo Mora
+        Mora.objects.create_mora(
+            cuota,
+            monto_mora,
+            descripcion_mora
+
+
+        )
+
+        return super(MoraCreatePk, self).form_valid(form)
+
+
+class MoraListPk(ListView):
+    model = Mora
+    template_name = 'credito/mora_list.html'
+    context_object_name = 'moras'
+
+    def get_queryset(self):
+        palabra_clave = self.kwargs['pk']
+        lista = Mora.objects.filter(
+            cuota=palabra_clave).order_by('-updated')
+        return lista
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        palabra_clave = self.kwargs['pk']
+        cuota = Cuota.objects.get(pk=palabra_clave)
+        context["cuota"] = cuota
+        return context
+
+
+class MoraUpdateView(UpdateView):
+    template_name = 'credito/mora_update.html'
+    model = Mora
+    fields = (
+        'descripcion',
+        'monto_mora',
+        'cargador_mora'
+    )
+    
+
+
+class MoraDeleteView(DeleteView):
+    template_name = 'credito/mora_delete.html'
+    model = Mora
+    success_url = reverse_lazy('credito_app:credito_list')
+
+
+class MoraDetailView(DetailView):
+    model = Mora
+    template_name = 'credito/mora_detail.html'

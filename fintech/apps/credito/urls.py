@@ -7,7 +7,12 @@ from apps.credito.views import (
     CreditoDeleteView,
     CreditoDetailView,
     CreditoPkCreate,
-    CuotaListView
+    CuotaListView,
+    MoraCreatePk,
+    MoraListPk,
+    MoraDeleteView,
+    MoraUpdateView,
+    MoraDetailView,
 )
 
 app_name = 'credito_app'
@@ -49,11 +54,43 @@ urlpatterns = [
         CreditoDeleteView.as_view(),
         name='credito_delete'
     ),
+
     path(
         'cuota/list/<pk>/',
         CuotaListView.as_view(),
         name='cuota_list'
     ),
 
+    path(
+        'credito/cuota/mora/<pk>/',
+        MoraCreatePk.as_view(),
+        name='mora_create'
+    ),
+#-------------------------Mora Urls
+    path(
+        'credito/cuota/mora/<pk>/',
+        MoraCreatePk.as_view(),
+        name='mora_create'
+    ),
+    path(
+        'credito/mora/list/<pk>/',
+        MoraListPk.as_view(),
+        name='mora_list_pk'
+    ),
+    path(
+        'mora/delete/<pk>/',
+        MoraDeleteView.as_view(),
+        name='mora_delete'
+    ),
+    path(
+        'mora/update/<str:pk>/',
+        MoraUpdateView.as_view(),
+        name='mora_update'
+    ),
+    path(
+        'mora/detail/<pk>/',
+        MoraDetailView.as_view(),
+        name='mora_detail'
+    ),
 
 ]

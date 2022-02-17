@@ -1,6 +1,6 @@
 
 from django import forms
-from apps.credito.models import Credito
+from apps.credito.models import Credito, Cuota, Mora
 from django.contrib.admin.widgets import AdminDateWidget
 
 
@@ -60,3 +60,26 @@ class CreditoPkForm(forms.ModelForm):
         required=True)
     cant_cuota.widget.attrs.update(
         {'placeholder': 'Cantidad de Cuotas'})
+
+
+class MoraFormPk(forms.ModelForm):
+    class Meta:
+
+        model = Mora
+        fields = (
+
+            'monto_mora',
+            'descripcion_mora',
+            'cargador_mora'
+        )
+
+    monto_mora = forms.FloatField(
+        label='Monto de Mora',
+        required=True)
+    monto_mora.widget.attrs.update({'placeholder': 'Ingrese la Mora'})
+
+    descripcion_mora = forms.CharField(
+        label='Descripcion',
+        required=False)
+    descripcion_mora.widget.attrs.update(
+        {'placeholder': 'Descripcion'})

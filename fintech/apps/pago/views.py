@@ -119,12 +119,6 @@ class PagoPkCreateView(FormView):
         Pago.objects.set_situacion(
             cuota,
             monto,
-            fecha
         )
-        """
-        Pago.objects.set_mora(
-            cuota,
-            fecha
-        )
-        """
-        return super(PagoCreateView, self).form_valid(form)
+
+        return super(PagoPkCreateView, self).form_valid(form)

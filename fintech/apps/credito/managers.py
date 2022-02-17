@@ -6,6 +6,10 @@ from dateutil.relativedelta import relativedelta
 
 class CuotaManager(models.Manager):
 
+    def cargar_saldos_morosos(self, cuota, mora):
+        # Crear objeto mora
+        pass
+
     def create_cuotas(self, credito_obj, capital, fecha, p_tasa_interes, cant_cuota):
 
         # Formulas:
@@ -23,17 +27,19 @@ class CuotaManager(models.Manager):
         # Tratamiento de la fecha
 
         dia = fecha.day
-        mes = 1
+        mes = 0
 
         if dia > 15:
-            mes = 2
+            mes += 2
+
+        else:
+            mes += 1
 
         # Se crean todas las cuotas que perteneceran al credito
-        i = 1
+
         capital_remanente = capital
 
         for i in range(cant_cuota):
-
             interes_monto = round(capital_remanente * p_tasa_interes, 2)
             amortizacion = round(valor_cuota - interes_monto, 2)
 
@@ -41,15 +47,13 @@ class CuotaManager(models.Manager):
 
                 capital_amortizable=capital_remanente,
                 interes=interes_monto,
-                numero_cuota=i + 1,
+                numero_cuota=(i) + 1,
                 amortizacion=amortizacion,
                 monto_cuota=valor_cuota,
                 fecha_pago=fecha + relativedelta(day=10, months=i+mes),
 
                 credito=credito_obj
-
             )
-            mes = 0
 
             capital_remanente = round(capital_remanente-amortizacion, 2)
 
@@ -72,5 +76,15 @@ class CreditoManager(models.Manager):
             monto_cuota=valor_cuota
         )
         return credito_obj
-        # def update_mora():
-        # Esto se me ocurre de 2 formas. Con un boton que se aprieta n dia del mes y calcula todas las moras
+
+
+class MoraManager(models.Manager):
+
+    def create_mora(self, cuota, monto, descripcion):
+        self.create(
+
+            cuota=cuota,
+            monto_mora=monto,
+            descripcion_mora=descripcion
+
+        )
