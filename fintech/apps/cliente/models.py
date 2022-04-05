@@ -30,7 +30,6 @@ class Cliente(models.Model):
     direccion = models.CharField(max_length=70)
     fecha_nacimiento = models.DateField()
     telefono = models.CharField(max_length=20)
-
     cbu = models.CharField(max_length=30)
     tipo_empleo = models.CharField(max_length=20, choices=(
         ('Publico', 'Publico'),
@@ -44,7 +43,6 @@ class Cliente(models.Model):
     bcra = models.CharField(
         max_length=20, choices=BCRA, default=1
     )
-    
     activo = models.BooleanField(default=True)
     embargo = models.BooleanField(default=False)
     juicios = models.TextField(default='Sin juicios')

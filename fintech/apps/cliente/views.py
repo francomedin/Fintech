@@ -15,16 +15,15 @@ class ClienteCreateView(CreateView):
     form_class = ClienteForm
     template_name = 'cliente/cliente_create.html'
 
-    #success_url = reverse_lazy('cliente_app:cliente_list')
+    success_url = reverse_lazy('cliente_app:cliente_list')
 
-    def get_success_url(self):
-        return reverse('cliente_app:cliente_detail', kwargs={'pk': self.object.pk})
-
-    def get_form_kwargs(self, *args, **kwargs):
+    
+"""    def get_form_kwargs(self, *args, **kwargs):
         kwargs = super(ClienteCreateView, self).get_form_kwargs(
             *args, **kwargs)
         return kwargs
 
+"""
 
 class ClienteDeleteView(DeleteView):
     model = Cliente

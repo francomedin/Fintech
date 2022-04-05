@@ -47,7 +47,7 @@ Listado de Clientes
                     <th scope="col">Telefono</th>
                     <th scope="col">CBU</th>
                     <th scope="col">Situacion</th>
-                    <th scope="col">Detalles</th>
+                    <th scope="col">Detalle</th>
                     <th scope="col">Creditos</th>
 
 
@@ -67,8 +67,24 @@ Listado de Clientes
                     <td>{{cliente.situacion}}</td>
 
                     <td>
-                        <a class="btn btn-outline-success" role="button"
-                            href="{%url 'cliente_app:cliente_detail' cliente.id%}">Ver</a>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Ver
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li>
+                                    <a class="dropdown-item" href="{%url 'cliente_app:cliente_detail' cliente.id%}">Detalles</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{%url 'cliente_app:cliente_update' cliente.id%}">Modificar</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{%url 'cliente_app:cliente_delete' cliente.id%}">Eliminar</a>
+                                </li>
+                               
+                            </ul>
+                        </div>
 
                     </td>
                     <td>

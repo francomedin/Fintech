@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from .managers import CreditoManager, CuotaManager, MoraManager
 from apps.cliente.models import Cliente
 # Create your models here.
@@ -84,5 +85,7 @@ class Mora(models.Model):
         Cuota, on_delete=models.CASCADE, related_name='mora')
     objects = MoraManager()
 
+    def get_absolute_url(self):
+        return reverse('mora_detail', kwargs={'pk': self.pk})
     def __str__(self):
         return str(self.pk)

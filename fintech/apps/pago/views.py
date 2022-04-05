@@ -1,9 +1,11 @@
 from django.views.generic.edit import FormView, UpdateView
 from django.views.generic import ListView, DeleteView
 from django.views.generic.detail import DetailView
+from django.http import HttpResponseRedirect
 from .models import Pago
+from apps.credito.models import Credito, Cuota
 from .forms import PagoForm, PagoPkForm
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 # Create your views here.
 from apps.credito.models import Cuota
 
@@ -35,25 +37,42 @@ class PagoCreateView(FormView):
             cobrador
 
         )
-        Pago.objects.set_situacion(
-            cuota,
-            monto,
-            fecha
-        )
-        """
-        Pago.objects.set_mora(
-            cuota,
-            fecha
-        )
-            """
+      
+       
         return super(PagoCreateView, self).form_valid(form)
 
+    def get_success_url(self):
+        pago=Pago.objects.get(pk=self.kwargs['pk'])
+        credito_pk=pago.cuota.credito.pk
+       
+        return reverse_lazy(
+            'credito_app:credito_list',
+            kwargs={'pk': credito_pk}
+        )
 
 class PagoDeleteView(DeleteView):
     template_name = 'pago/pago_delete.html'
     model = Pago
-    success_url = reverse_lazy('pago_app:pago_list')
+    
+    
+    def delete(self, request, *args, **kwargs):
 
+        self.object = self.get_object()
+        print(f'pago {self.object}')
+        cuota=self.object.cuota
+        success_url = self.get_success_url()
+        self.object.delete()
+        Pago.objects.total_pagado(cuota)
+        return HttpResponseRedirect(success_url)
+
+    def get_success_url(self):
+        cuota_obj=Pago.objects.get(pk=self.kwargs['pk'])
+        cuota_pk=cuota_obj.cuota.pk
+
+        return reverse_lazy(
+            'pago_app:pago_list_pk',
+            kwargs={'pk': cuota_pk}
+        )
 
 class PagoDetailView(DetailView):
     model = Pago
@@ -64,7 +83,14 @@ class PagoUpdateView(UpdateView):
     template_name = 'pago/pago_update.html'
     model = Pago
     fields = ('__all__')
+    def get_success_url(self):
+        cuota_obj=Pago.objects.get(pk=self.kwargs['pk'])
+        cuota_pk=cuota_obj.cuota.pk
 
+        return reverse_lazy(
+            'pago_app:pago_list_pk',
+            kwargs={'pk': cuota_pk}
+        )
 
 class PagoListView(ListView):
     model = Pago
@@ -116,9 +142,16 @@ class PagoPkCreateView(FormView):
             cobrador
 
         )
-        Pago.objects.set_situacion(
-            cuota,
-            monto,
-        )
-
+        Pago.objects.set_situacion(cuota)
+      
         return super(PagoPkCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+       
+        cuota=Cuota.objects.get(pk=self.kwargs['pk'])
+        credito_pk=cuota.credito.pk
+       
+        return reverse_lazy(
+            'credito_app:cuota_list',
+            kwargs={'pk': credito_pk}
+        )

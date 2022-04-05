@@ -78,8 +78,29 @@ Creditos
                     <td>{{credito.situacion}}</td>
 
                     <td>
-                        <a class="btn btn-outline-success" role="button"
-                            href="{%url 'credito_app:credito_detail' credito.pk%}">Ver</a>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Ver
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                <li>
+                                    <a class="dropdown-item"
+                                        href="{%url 'credito_app:credito_detail' credito.pk%}">Detalles</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                        href="{%url 'credito_app:credito_update' credito.pk%}">Modificar</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                        href="{%url 'credito_app:credito_delete' credito.pk%}">Eliminar</a>
+                                </li>
+
+                            </ul>
+                        </div>
+
+
 
                     </td>
                     <td>

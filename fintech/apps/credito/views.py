@@ -83,7 +83,14 @@ class CreditoCreateView(FormView):
 class CreditoDeleteView(DeleteView):
     template_name = 'credito/credito_delete.html'
     model = Credito
-    success_url = reverse_lazy('credito_app:credito_list')
+    def get_success_url(self):
+        credito=Credito.objects.get(pk=self.kwargs['pk'])
+        cliente_pk=credito.titular.pk
+       
+        return reverse_lazy(
+            'credito_app:credito_list',
+            kwargs={'pk': cliente_pk}
+        )
 
 
 class CreditoDetailView(DetailView):
@@ -95,6 +102,15 @@ class CreditoUpdateView(UpdateView):
     template_name = 'credito/credito_update.html'
     model = Credito
     fields = ('__all__')
+
+    def get_success_url(self):
+        credito=Credito.objects.get(pk=self.kwargs['pk'])
+        cliente_pk=credito.titular.pk
+        
+        return reverse_lazy(
+            'credito_app:credito_list',
+            kwargs={'pk': cliente_pk}
+        )
 
 
 class CreditoListView(ListView):
@@ -117,6 +133,7 @@ class CreditoListView(ListView):
         palabra_clave = self.kwargs['pk']
         titular = Cliente.objects.filter(pk=palabra_clave)
         context["titular"] = titular[0]
+        
         return context
 
 
@@ -146,11 +163,7 @@ class MoraCreatePk(FormView):
     template_name = 'credito/mora_create.html'
     form_class = MoraFormPk
 
-    def get_success_url(self):
-        return reverse_lazy(
-            'credito_app:mora_list_pk',
-            kwargs={'pk': self.kwargs['pk']}
-        )
+    
 
     def form_valid(self, form):
 
@@ -164,12 +177,19 @@ class MoraCreatePk(FormView):
             cuota,
             monto_mora,
             descripcion_mora
-
-
         )
 
         return super(MoraCreatePk, self).form_valid(form)
 
+    def get_success_url(self):
+        cuota_pk=Cuota.objects.get(pk=self.kwargs['pk'])
+        credito_pk=cuota_pk.credito.pk
+       
+
+        return reverse_lazy(
+            'credito_app:cuota_list',
+            kwargs={'pk': credito_pk}
+        )
 
 class MoraListPk(ListView):
     model = Mora
@@ -193,18 +213,31 @@ class MoraListPk(ListView):
 class MoraUpdateView(UpdateView):
     template_name = 'credito/mora_update.html'
     model = Mora
+    success_url = reverse_lazy('credito_app:credito_list',)
     fields = (
-        'descripcion',
+        'descripcion_mora',
         'monto_mora',
         'cargador_mora'
     )
-    
+    def get_success_url(self):
+        cuota_pk=Mora.objects.get_credito_pk(self.kwargs['pk'])
+
+        return reverse_lazy(
+            'credito_app:cuota_list',
+            kwargs={'pk': cuota_pk}
+        )
 
 
 class MoraDeleteView(DeleteView):
     template_name = 'credito/mora_delete.html'
     model = Mora
-    success_url = reverse_lazy('credito_app:credito_list')
+    def get_success_url(self):
+        cuota_pk=Mora.objects.get_credito_pk(self.kwargs['pk'])
+
+        return reverse_lazy(
+            'credito_app:cuota_list',
+            kwargs={'pk': cuota_pk}
+        )
 
 
 class MoraDetailView(DetailView):

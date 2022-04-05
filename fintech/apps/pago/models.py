@@ -28,7 +28,7 @@ class Cobrador(models.Model):
 
 class Pago(models.Model):
 
-    cuota = models.ForeignKey(Cuota, on_delete=models.PROTECT, default=1)
+    cuota = models.ForeignKey(Cuota, on_delete=models.PROTECT, default=1,related_name='cuota_pago')
     monto = models.FloatField()
     fecha = models.DateField()
     descripcion = models.CharField(max_length=300, blank=True)

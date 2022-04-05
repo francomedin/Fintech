@@ -1,14 +1,14 @@
 from django.db import models
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
+#from apps.pago.models import Pago
+
+
 
 # En caso de que la fecha se vea modificada va a ser necesario actualizar todas las cuotas.
 
 
 class CuotaManager(models.Manager):
-
-    def cargar_saldos_morosos(self, cuota, mora):
-        # Crear objeto mora
-        pass
 
     def create_cuotas(self, credito_obj, capital, fecha, p_tasa_interes, cant_cuota):
 
@@ -57,6 +57,14 @@ class CuotaManager(models.Manager):
 
             capital_remanente = round(capital_remanente-amortizacion, 2)
 
+    def total_pagado(self,cuota,sum_pagos):
+        #Recibe la cuota y monto abonado. Acumula
+       
+        cuota.total_pagado=sum_pagos
+        cuota.save()
+       
+    
+
 
 class CreditoManager(models.Manager):
 
@@ -88,3 +96,19 @@ class MoraManager(models.Manager):
             descripcion_mora=descripcion
 
         )
+    
+    def get_credito_pk(self,pk):
+        mora=self.get(id=pk)
+        credito=mora.cuota.credito.pk
+      
+    
+        return credito
+    
+    def get_mora(self,cuota_pk):
+        try:
+            mora_obj=self.get(cuota=cuota_pk)
+            mora=mora_obj.monto_mora
+        except:
+            mora=0
+            
+        return mora

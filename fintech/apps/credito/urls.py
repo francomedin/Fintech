@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,re_path
 
 from apps.credito.views import (
     CreditoCreateView,
@@ -50,7 +50,7 @@ urlpatterns = [
     ),
 
     path(
-        'credito/delete',
+        'credito/delete/<pk>/',
         CreditoDeleteView.as_view(),
         name='credito_delete'
     ),
@@ -78,12 +78,12 @@ urlpatterns = [
         name='mora_list_pk'
     ),
     path(
-        'mora/delete/<pk>/',
+        'credito/mora/delete/<pk>/',
         MoraDeleteView.as_view(),
         name='mora_delete'
     ),
     path(
-        'mora/update/<str:pk>/',
+        'credito/mora/update/<pk>/',
         MoraUpdateView.as_view(),
         name='mora_update'
     ),
